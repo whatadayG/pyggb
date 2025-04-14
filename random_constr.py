@@ -67,14 +67,15 @@ class Command:
             if o is not None: o.data = x
 
     def __str__(self):
-        inputs_str = ' '.join([x.label for x in self.inputs])
-        outputs_str = ' '.join([x.label if x is not None else "_" for x in self.outputs])
+        inputs_str = ' '.join([x.label for x in self.input_elements])
+        outputs_str = ' '.join([x.label if x is not None else "_" for x in self.output_elements])
         return "{} : {} -> {}".format(
             self.name, inputs_str, outputs_str
         )
 
 const_type_to_str = {
     int : "int",
+    float : "float",
     AngleSize : "AngleSize",
     Measure : "Measure",
 }
@@ -94,6 +95,11 @@ class ConstCommand:
         return "const {} {} -> {}".format(datatype_str, self.value, self.label)
 
 def parse_command(line, element_dict):
+    # Skip empty lines and comment lines
+    line = line.strip()
+    if not line or line.startswith('#'):
+        return None
+        
     tokens = line.split()
     if tokens[0] == "const":
         assert(len(tokens) == 5)
@@ -129,6 +135,8 @@ class Construction:
         self.max_border = max_border
         self.nc_commands = []
         self.to_prove = None
+        self.to_measure = None
+        self.statement_type = None  # "prove" or "measure"
         self.element_dict = dict()
         self.elements = []
 
@@ -152,22 +160,34 @@ class Construction:
     def load(self, filename):
         self.nc_commands = []
         self.to_prove = None
+        self.to_measure = None
+        self.statement_type = None
         self.element_dict = dict()
         with open(filename, 'r') as f:
             for line in f:
                 command = parse_command(line, self.element_dict)
+                if command is None:
+                    continue
                 if isinstance(command, ConstCommand): command.apply()
                 elif isinstance(command, Command):
                     if command.name == "prove":
                         [inp] = command.input_elements
                         [out] = command.output_elements
                         if out is not None: del self.element_dict[out.label]
-                        assert(self.to_prove is None)
+                        assert(self.to_prove is None and self.to_measure is None)
                         self.to_prove = inp
-
+                        self.statement_type = "prove"
+                    elif command.name == "measure":
+                        [inp] = command.input_elements
+                        [out] = command.output_elements
+                        if out is not None: del self.element_dict[out.label]
+                        assert(self.to_prove is None and self.to_measure is None)
+                        self.to_measure = inp
+                        self.statement_type = "measure"
                     else: self.nc_commands.append(command)
 
-        assert(self.to_prove is not None)
+        assert(self.statement_type is not None)
+        assert(self.to_prove is not None or self.to_measure is not None)
         self.elements = list(self.element_dict.values())
 
     def run_commands(self):
@@ -181,7 +201,8 @@ class Construction:
                 max_attempts -= 1
                 if max_attempts == 0: raise
                 continue
-            if require_theorem and not self.to_prove.data.b: continue
+            if self.statement_type == "prove" and require_theorem and not self.to_prove.data.b: 
+                continue
             break
 
         self.fit_to_window()
@@ -219,29 +240,88 @@ class Construction:
             np.max(important_points, axis = 0),
         ])
 
-    def test(self, num_tests = 100):
-        constr_fail, check_fail, success = 0, 0, 0
-        for _ in range(num_tests):
-            try:
-                self.run_commands()
-                if self.to_prove.data.b: success += 1
-                else: check_fail += 1
-            except:
-                constr_fail += 1
+    def test(self, num_tests = 1, verbose=True):
+        if self.statement_type == "prove":
+            constr_fail, check_fail, success = 0, 0, 0
+            for test_idx in range(num_tests):
+                try:
+                    self.run_commands()
+                    if self.to_prove.data.b: success += 1
+                    else: check_fail += 1
+                except Exception as e:
+                    constr_fail += 1
+                    if verbose:
+                        print(f"Test {test_idx+1} failed: {str(e)}")
+                        import traceback
+                        traceback.print_exc()
 
-        constr_fail, check_fail, success = [
-            100*x / num_tests
-            for x in (constr_fail, check_fail, success)
-        ]
-        print("{:.2f}% failed constructions, {:.2f}% false, {:.2f}% true".format(
-            constr_fail, check_fail, success
-        ))
+            constr_fail, check_fail, success = [
+                100*x / num_tests
+                for x in (constr_fail, check_fail, success)
+            ]
+            print("{:.2f}% failed constructions, {:.2f}% false, {:.2f}% true".format(
+                constr_fail, check_fail, success
+            ))
+        elif self.statement_type == "measure":
+            constr_fail, measurements = 0, []
+            for test_idx in range(num_tests):
+                try:
+                    self.run_commands()
+                    measurements.append(self.to_measure.value())
+                except Exception as e:
+                    constr_fail += 1
+                    if verbose:
+                        print(f"Test {test_idx+1} failed: {str(e)}")
+                        import traceback
+                        traceback.print_exc()
+
+            if constr_fail > 0:
+                constr_fail_percent = 100 * constr_fail / num_tests
+                print("{:.2f}% failed constructions".format(constr_fail_percent))
+            
+            if measurements:
+                avg_measurement = sum(measurements) / len(measurements)
+                print("Measurements: {} samples, avg={:.4f}, min={:.4f}, max={:.4f}".format(
+                    len(measurements), avg_measurement, min(measurements), max(measurements)
+                ))
+        else:
+            raise ValueError("Unknown statement type: {}".format(self.statement_type))
 
 if __name__ == "__main__":
-    #datadir = "ggb-benchmark/true"
-    datadir = "patrik"
+    import argparse
+    parser = argparse.ArgumentParser(description='Test geometric constructions')
+    parser.add_argument('--test_measure', action='store_true', help='Test measure statement')
+    parser.add_argument('--file', type=str, default=None, help='Specific file to test')
+    args = parser.parse_args()
+
     construction = Construction()
-    for filename in os.listdir(datadir):
-        if not filename.endswith(".txt"): continue
-        construction.load(os.path.join(datadir, filename))
-        construction.test()
+    
+    if args.test_measure:
+        # Test measure statement
+        print("Testing measure statements...")
+        test_files = ["test_measure_simple.txt", "test_measure.txt", "test_measure_complex.txt", "test_measure_ratio.txt"]
+        if args.file:
+            test_files = [args.file]
+        
+        for test_file in test_files:
+            print(f"\nTesting {test_file}...")
+            try:
+                construction.load(test_file)
+                construction.test(num_tests=10)
+            except Exception as e:
+                print(f"Error with test file {test_file}: {str(e)}")
+    else:
+        # Test prove statements (original functionality)
+        print("Testing prove statements...")
+        datadir = "ggb-benchmark/true"
+        test_files = [os.path.join(datadir, f) for f in os.listdir(datadir) if f.endswith(".txt")]
+        
+        if args.file:
+            test_files = [args.file]
+        
+        for filename in test_files:
+            print(f"\nTesting {filename}...")
+            construction.load(filename)
+            construction.test()
+            if not args.file:  # Only test one file if not specified
+                break

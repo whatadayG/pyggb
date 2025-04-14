@@ -91,8 +91,19 @@ def are_congruent_ss(s1, s2):
     return gt.Boolean(np.isclose(l1, l2))
 
 def are_equal_mm(m1, m2):
-    assert(m1.dim == m2.dim)
-    return gt.Boolean(np.isclose(m1.x, m2.x))
+    # Handle both Measure objects and numeric values
+    if isinstance(m1, gt.Measure) and isinstance(m2, gt.Measure):
+        assert(m1.dim == m2.dim)
+        return gt.Boolean(np.isclose(m1.x, m2.x))
+    elif isinstance(m1, gt.Measure):
+        # m2 is a numeric value
+        return gt.Boolean(np.isclose(m1.x, float(m2)))
+    elif isinstance(m2, gt.Measure):
+        # m1 is a numeric value
+        return gt.Boolean(np.isclose(float(m1), m2.x))
+    else:
+        # Both are numeric values
+        return gt.Boolean(np.isclose(float(m1), float(m2)))
 
 def are_equal_mi(m, i):
     assert(m.dim == 0)
@@ -348,8 +359,21 @@ def minus_m(m):
     return gt.Measure(-m.x, m.dim)
 
 def minus_mm(m1, m2):
-    assert(m1.dim == m2.dim)
-    return gt.Measure(m1.x-m2.x, m1.dim)
+    # Handle both Measure objects and numeric values
+    if isinstance(m1, gt.Measure) and isinstance(m2, gt.Measure):
+        assert(m1.dim == m2.dim)
+        return gt.Measure(m1.x - m2.x, m1.dim)
+    elif isinstance(m1, gt.Measure):
+        # m2 is a numeric value
+        # Assume m2 has the same dimension as m1
+        return gt.Measure(m1.x - float(m2), m1.dim)
+    elif isinstance(m2, gt.Measure):
+        # m1 is a numeric value
+        # Assume m1 has the same dimension as m2
+        return gt.Measure(float(m1) - m2.x, m2.dim)
+    else:
+        # Both are numeric values - assume they are dimensionless
+        return gt.Measure(float(m1) - float(m2), 0)
 
 def minus_ms(m, s):
     assert(m.dim == 1)
@@ -427,6 +451,70 @@ def point_l(line):
 def point_s(segment):
     return gt.Point(gt.interpolate(segment.end_points[0], segment.end_points[1], np.random.random()))
 
+def point_pm(point, distance):
+    """
+    Create a point at a specified distance from an existing point.
+    The direction is chosen randomly.
+    """
+    # Handle both Measure objects and numeric values
+    if isinstance(distance, gt.Measure):
+        assert(distance.dim == 1 and distance.x > 0)
+        dist_value = distance.x
+    else:
+        # If it's a direct numeric value
+        dist_value = float(distance)
+        assert(dist_value > 0)
+        
+    return gt.Point(point.a + dist_value * gt.random_direction())
+
+def point_pmpm(point1, distance1, point2, distance2):
+    """
+    Create a point at specified distances from two existing points.
+    If there are two possible points, one is chosen randomly.
+    If there are no possible points (circles don't intersect), raises an assertion error.
+    """
+    # Handle both Measure objects and numeric values
+    if isinstance(distance1, gt.Measure):
+        assert(distance1.dim == 1 and distance1.x > 0)
+        dist1_value = distance1.x
+    else:
+        dist1_value = float(distance1)
+        assert(dist1_value > 0)
+        
+    if isinstance(distance2, gt.Measure):
+        assert(distance2.dim == 1 and distance2.x > 0)
+        dist2_value = distance2.x
+    else:
+        dist2_value = float(distance2)
+        assert(dist2_value > 0)
+    
+    # Create two circles centered at the points with radii equal to the distances
+    c1 = gt.Circle(point1.a, dist1_value)
+    c2 = gt.Circle(point2.a, dist2_value)
+    
+    # Find the intersection points of the two circles
+    try:
+        intersections = intersect_cc(c1, c2)
+        
+        # If there's only one intersection point, return it
+        if not isinstance(intersections, list):
+            return intersections
+            
+        # If there are two intersection points, choose one randomly
+        return intersections[np.random.randint(0, len(intersections))]
+    except:
+        # If circles don't intersect, raise an error
+        centers_dist = np.linalg.norm(point1.a - point2.a)
+        sum_radii = dist1_value + dist2_value
+        diff_radii = abs(dist1_value - dist2_value)
+        
+        if centers_dist > sum_radii:
+            raise AssertionError(f"Circles too far apart: centers distance {centers_dist} > sum of radii {sum_radii}")
+        elif centers_dist < diff_radii:
+            raise AssertionError(f"One circle inside the other: centers distance {centers_dist} < difference of radii {diff_radii}")
+        else:
+            raise AssertionError("Failed to find intersection of circles")
+
 def polar_pc(point, circle):
     n = point.a - circle.c
     assert(not np.isclose(n, 0).all())
@@ -477,6 +565,12 @@ def product_ss(s1, s2):
 
 def product_fm(f, m):
     return product_mf(m, f)
+
+def product_bb(b1, b2):
+    """
+    Compute the logical AND of two Boolean values.
+    """
+    return gt.Boolean(b1.b and b2.b)
 
 def product_ff(f1, f2):
     return gt.Measure(f1*f2, 0)
@@ -585,3 +679,10 @@ def translate_pv(point, vector):
 
 def vector_pp(p1, p2):
     return gt.Vector((p1.a, p2.a))
+
+def measure(x):
+    """
+    Marks an element as the final measurement for a construction file.
+    Simply returns the input element.
+    """
+    return x
