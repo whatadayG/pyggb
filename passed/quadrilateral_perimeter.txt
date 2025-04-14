@@ -1,0 +1,27 @@
+# Quadrilateral with constrained sides measuring the perimeter
+# Create initial point
+point :  -> A
+# Create second point at distance 3 from A
+const int 3 -> side1
+point_pm : A side1 -> B
+# Create third point at distances 4 from B and 5 from A
+const int 4 -> side2
+const int 5 -> diagonal1
+point_pmpm : B side2 A diagonal1 -> C
+# Create fourth point at distances 6 from C and 7 from A
+const int 6 -> side3
+const int 7 -> diagonal2
+point_pmpm : C side3 A diagonal2 -> D
+# Create the quadrilateral
+polygon : A B C D -> poly1 AB BC CD DA
+# Measure the sides
+distance_pp : A B -> len1
+distance_pp : B C -> len2
+distance_pp : C D -> len3
+distance_pp : D A -> len4
+# Calculate perimeter
+sum_mm : len1 len2 -> sum1
+sum_mm : sum1 len3 -> sum2
+sum_mm : sum2 len4 -> perimeter
+# Output the final measurement
+measure : perimeter -> result 

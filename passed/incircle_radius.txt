@@ -1,0 +1,23 @@
+# Triangle measuring the radius of its incircle
+# Create initial point
+point :  -> A
+# Create second point at distance 5 from A
+const int 5 -> side1
+point_pm : A side1 -> B
+# Create third point at distances 7 from A and 8 from B
+const int 7 -> side2
+const int 8 -> side3
+point_pmpm : A side2 B side3 -> C
+# Create the angle bisectors
+angular_bisector_ppp : B A C -> bisectorA
+angular_bisector_ppp : A B C -> bisectorB
+# Find the incenter (intersection of any two angle bisectors)
+intersect_ll : bisectorA bisectorB -> I
+# Create the sides of the triangle
+line_pp : A B -> side_AB
+# Find the distance from incenter to a side (which is the inradius)
+orthogonal_line_pl : I side_AB -> perpendicular
+intersect_ll : perpendicular side_AB -> H
+distance_pp : I H -> inradius
+# Output the final measurement
+measure : inradius -> result 

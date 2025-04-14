@@ -1,0 +1,23 @@
+# Triangle measuring the distance from centroid to a vertex
+# Create initial point
+point :  -> A
+# Create second point at distance 6 from A
+const int 6 -> side1
+point_pm : A side1 -> B
+# Create third point at distances 8 from A and 7 from B
+const int 8 -> side2
+const int 7 -> side3
+point_pmpm : A side2 B side3 -> C
+# Find the midpoints of the sides
+midpoint_pp : B C -> M1
+midpoint_pp : A C -> M2
+midpoint_pp : A B -> M3
+# Create the medians
+line_pp : A M1 -> median1
+line_pp : B M2 -> median2
+# Find the centroid (intersection of any two medians)
+intersect_ll : median1 median2 -> G
+# Measure the distance from centroid to vertex A
+distance_pp : G A -> distance
+# Output the final measurement
+measure : distance -> result 

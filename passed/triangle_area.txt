@@ -1,0 +1,16 @@
+# Triangle with constrained sides measuring the area
+# Create initial point
+point :  -> A
+# Create second point at distance 5 from A
+const int 5 -> dist1
+point_pm : A dist1 -> B
+# Create third point at distances 4 from A and 3 from B
+const int 4 -> dist2
+const int 3 -> dist3
+point_pmpm : A dist2 B dist3 -> C
+# Create the triangle
+polygon : A B C -> poly1 AB BC CA
+# Measure the area of the triangle
+area : A B C -> triangle_area
+# Output the final measurement
+measure : triangle_area -> result 

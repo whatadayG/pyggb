@@ -641,8 +641,21 @@ def semicircle(p1, p2):
     )
 
 def sum_mm(m1, m2):
-    assert(m1.dim == m2.dim)
-    return gt.Measure(m1.x + m2.x, m1.dim)
+    # Handle both Measure objects and numeric values
+    if isinstance(m1, gt.Measure) and isinstance(m2, gt.Measure):
+        assert(m1.dim == m2.dim)
+        return gt.Measure(m1.x + m2.x, m1.dim)
+    elif isinstance(m1, gt.Measure):
+        # m2 is a numeric value
+        # Assume m2 has the same dimension as m1
+        return gt.Measure(m1.x + float(m2), m1.dim)
+    elif isinstance(m2, gt.Measure):
+        # m1 is a numeric value
+        # Assume m1 has the same dimension as m2
+        return gt.Measure(float(m1) + m2.x, m2.dim)
+    else:
+        # Both are numeric values - assume they are dimensionless
+        return gt.Measure(float(m1) + float(m2), 0)
 
 def sum_ms(m, s):
     assert(m.dim == 1)

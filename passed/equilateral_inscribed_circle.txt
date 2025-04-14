@@ -1,0 +1,31 @@
+# Create point A as the origin
+point :  -> A
+point :  -> B
+
+# Create a regular equilateral triangle with vertices A, B, C
+const int 3 -> num_sides
+polygon_ppi : A B num_sides -> poly1 AB BC CA C
+
+# Calculate the incenter of the triangle (the center of the inscribed circle)
+# For any triangle, the incenter is the point where the angle bisectors meet
+angular_bisector_ppp : B A C -> bisector_A
+angular_bisector_ppp : A B C -> bisector_B
+intersect_ll : bisector_A bisector_B -> I
+
+# Calculate the distance from the incenter to side AB
+# First, create a perpendicular line from I to side AB
+line : A B -> line_AB
+orthogonal_line_pl : I line_AB -> perp_line
+intersect_ll : perp_line line_AB -> H
+
+# Calculate the radius of the inscribed circle
+distance_pp : I H -> radius
+
+# Calculate the side length of the triangle
+distance_pp : A B -> side_len
+
+# Calculate the ratio of radius to side length
+ratio_mm : radius side_len -> ratio_value
+
+# Measure the ratio, which should be constrained
+measure : ratio_value -> result 

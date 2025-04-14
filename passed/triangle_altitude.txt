@@ -1,0 +1,19 @@
+# Triangle with constrained sides measuring the altitude
+# Create initial point
+point :  -> A
+# Create second point at distance 10 from A
+const int 10 -> base
+point_pm : A base -> B
+# Create third point at distances 8 from A and 8 from B
+const int 8 -> side
+point_pmpm : A side B side -> C
+# Create a line for the base
+line_pp : A B -> base_line
+# Create the altitude line from C to the base
+orthogonal_line_pl : C base_line -> altitude_line
+# Find the foot of the altitude
+intersect_ll : base_line altitude_line -> H
+# Measure the height
+distance_pp : C H -> height
+# Output the final measurement
+measure : height -> result 

@@ -1,0 +1,14 @@
+# Equilateral triangle measuring the area
+# Create initial point
+point :  -> A
+# Create second point at distance 10 from A
+const int 10 -> side
+point_pm : A side -> B
+# Create third point at distances 10 from A and 10 from B
+point_pmpm : A side B side -> C
+# Create the triangle
+polygon : A B C -> poly1 AB BC CA
+# Measure the area
+area : A B C -> triangle_area
+# Output the final measurement
+measure : triangle_area -> result 

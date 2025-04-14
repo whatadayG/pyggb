@@ -3,6 +3,7 @@ from geo_types import *
 
 type_to_shortcut = {
     int       : 'i',
+    float     : 'f',
     Boolean   : 'b',
     Measure   : 'm',
     Point     : 'p',

@@ -1,0 +1,12 @@
+{"question": "In a cyclic quadrilateral ABCD, let the diagonals AC and BD intersect at point P. If the products of distances PA·PC and PB·PD are computed, what is the ratio of these products?", "answer": "1.0"}
+{"question": "In triangle ABC, AB = 10, and points A and B are equidistant from C with AC = BC = 8. Find the length of the altitude from C to side AB.", "answer": "6.245"}
+{"question": "A parallelogram has sides of lengths 6 and 8. If the area of the parallelogram is determined by these side lengths and the angle between them, find the minimum possible area of the parallelogram.", "answer": "0.0"}
+{"question": "In triangle ABC, AB = 6, AC = 8, and BC = 7. Let G be the centroid of the triangle. Find the square of the distance from G to vertex A.", "answer": "4.0961"}
+{"question": "In triangle ABC, AB = 8, AC = 6, and BC = 7. Let D be the point where the angle bisector from A meets side BC. Find the length of segment AD.", "answer": "6.0"}
+{"question": "In an equilateral triangle, the radius of the inscribed circle is compared to the side length. Find the ratio of the radius to the side length.", "answer": "0.2887"}
+{"question": "Triangle ABC has sides of lengths 5, 4, and 3. Find the area of the triangle.", "answer": "6.0"}
+{"question": "Three points A, B, and C are positioned so that AB = 5, AC = 4, and BC = 6. Find the radius of the circle passing through all three points.", "answer": "3.0237"}
+{"question": "Triangle ABC has sides of lengths 5, 7, and 8. Find the radius of the inscribed circle of the triangle.", "answer": "1.7321"}
+{"question": "In triangle ABC, AB = 8, AC = 6, and BC = 10. Find the ratio of side AB to side AC.", "answer": "1.3333"}
+{"question": "An equilateral triangle has sides of length 10. Find the area of the triangle.", "answer": "43.3013"}
+{"question": "Quadrilateral ABCD has sides with AB = 3, BC = 4, CD = 6, and DA = 7, with AC = 5 and BD = 7. Find the perimeter of the quadrilateral.", "answer": "20.0"} 

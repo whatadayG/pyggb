@@ -1,0 +1,16 @@
+# Circle passing through three constrained points
+# Create initial point
+point :  -> A
+# Create second point at distance 5 from A
+const int 5 -> dist1
+point_pm : A dist1 -> B
+# Create third point at distances 4 from A and 6 from B
+const int 4 -> dist2
+const int 6 -> dist3
+point_pmpm : A dist2 B dist3 -> C
+# Create circle passing through the three points
+circle_ppp : A B C -> circ
+# Measure the radius of the circle
+radius_c : circ -> rad
+# Output the final measurement
+measure : rad -> result 

@@ -1,0 +1,17 @@
+# Triangle with constrained sides measuring ratio of two sides
+# Create initial point
+point :  -> A
+# Create second point at distance 8 from A
+const int 8 -> side1
+point_pm : A side1 -> B
+# Create third point at distances 6 from A and 10 from B
+const int 6 -> side2
+const int 10 -> side3
+point_pmpm : A side2 B side3 -> C
+# Measure the sides
+distance_pp : A B -> len1
+distance_pp : A C -> len2
+# Calculate the ratio of the sides
+ratio_mm : len1 len2 -> ratio
+# Output the final measurement
+measure : ratio -> result 

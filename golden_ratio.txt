@@ -1,0 +1,17 @@
+# Create a pentagon and measure the golden ratio
+point :  -> A
+point :  -> B
+
+# Create a regular pentagon with vertices A, B, C, D, E
+const int 5 -> num_sides
+polygon_ppi : A B num_sides -> poly1 AB BC CD DE EA C D E
+
+# Measure diagonal and side
+distance_pp : A C -> diagonal
+distance_pp : A B -> side
+
+# Calculate the ratio of diagonal to side
+ratio_mm : diagonal side -> ratio
+
+# Output the final measurement
+measure : ratio -> result 

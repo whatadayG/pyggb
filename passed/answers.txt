@@ -1,0 +1,12 @@
+cyclic_quadrilateral.txt: 1.0
+triangle_altitude.txt: 6.245
+parallelogram_area.txt: 0.0
+medians_intersection.txt: 4.0961
+angle_bisector_length.txt: 6.0
+equilateral_inscribed_circle.txt: 0.2887
+triangle_area.txt: 6.0
+circle_radius.txt: 3.0237
+incircle_radius.txt: 1.7321
+triangle_ratio.txt: 1.3333
+equilateral_triangle_area.txt: 43.3013
+quadrilateral_perimeter.txt: 20.0

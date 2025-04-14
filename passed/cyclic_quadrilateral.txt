@@ -1,0 +1,32 @@
+# Create an arbitrary triangle
+point :  -> A
+point :  -> B
+point :  -> C
+
+# Create the circumcircle of the triangle
+circle_ppp : A B C -> circle1
+
+# Create another point D on the circle to form a cyclic quadrilateral
+point_c : circle1 -> D
+
+# Create the diagonals of the quadrilateral
+segment : A C -> diag1
+segment : B D -> diag2
+
+# Create the intersection of the diagonals
+intersect_ll : diag1 diag2 -> P
+
+# Measure distances from P to the vertices
+distance_pp : P A -> dist_PA
+distance_pp : P C -> dist_PC
+product : dist_PA dist_PC -> prod1
+
+distance_pp : P B -> dist_PB
+distance_pp : P D -> dist_PD
+product : dist_PB dist_PD -> prod2
+
+# Calculate the ratio of these products (this is constrained by the power of a point theorem)
+ratio_mm : prod1 prod2 -> final_ratio
+
+# Output the final measurement
+measure : final_ratio -> result 

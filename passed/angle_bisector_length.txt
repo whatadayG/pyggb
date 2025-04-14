@@ -1,0 +1,19 @@
+# Triangle measuring the length of an angle bisector
+# Create initial point
+point :  -> A
+# Create second point at distance 8 from A
+const int 8 -> side1
+point_pm : A side1 -> B
+# Create third point at distances 6 from A and 7 from B
+const int 6 -> side2
+const int 7 -> side3
+point_pmpm : A side2 B side3 -> C
+# Create the angle bisector from A
+angular_bisector_ppp : B A C -> bisector
+# Find where the angle bisector intersects BC
+line_pp : B C -> side_BC
+intersect_ll : bisector side_BC -> D
+# Measure the length of the angle bisector
+distance_pp : A D -> bisector_length
+# Output the final measurement
+measure : bisector_length -> result 

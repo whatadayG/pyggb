@@ -1,0 +1,1 @@
+{"question": "In a regular pentagon with side length 1, let d be the length of a diagonal (a line segment connecting two non-adjacent vertices). The value of d can be expressed in the form (a + √b)/c, where a, b, and c are positive integers, b is not divisible by the square of any prime, and gcd(a, c) = gcd(b, c) = gcd(a, b, c) = 1. Find the value of a + b + c.", "answer": "8"}

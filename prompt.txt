@@ -1,0 +1,23 @@
+In the subdir pyggb/measure_benchmark, write 20 plausible construction files which each measure a quantity which is constructed to be constrained. (It should be possible to constrain the quantity by constraining the distances between some of the constructed points, which you can do with the point_pm and point_pmpm commands.) It is not necessary or desired for the constructions to be elegant, or to illustrate any particular geometric principles; perfectly random constructions are acceptable as long as the quantity that is measured at the end of the file is correctly constrained. In particular, do not intentionally make any constructions which illustrate the power of a point theorem, or construct any cyclic quadrilaterals.
+
+Here are some pointers:
+
+1. Do not make an exceedingly complex problem. A good rule of thumb is that not counting comments, 8-20 commands should be enough.
+2. Try not to rely excessively on arbitrary geometric constructions. The only real functionality with constants that we have tested which constrains the scale of a problem is constructing points at a fixed distance from other points, which are the point_pm and point_pmpm commands mentioned before. You can look at some of the constructions in pyggb/ggb-benchmark/true to see what simple constructions are unlikely to cause errors (though note that these files are proof files, and will not have constrained the scale of the problem like I asked for).
+3. Unless you want to fix the logic for parsing statements so that statements do not count, do not assume that you can put comments after the end of a valid command; these files are not .yaml files or similar, they are our custom format.
+*********************************************************
+
+(Step 2 doesn't need to be done by AI. It can be directly done by measure_test.py `python measure_test.py measure_benchmark`.)
+
+*********************************************************
+
+Please convert each of the construction files in passed/ into an AIME-style problem, stated in natural language. An AIME-style problem asks for the value of a specific quantity, as opposed to asking for a proof of a geometrical property. 
+
+Contrary to the usual AIME convention that the answer must be an integer, it is acceptable to provide a rationally expressed answer, or ask for the answer as a floating-point number rounded to three decimal places.
+
+Please format the answers in a .jsonl file under constructed_problems/batch2, matching the scheme of batch1.jsonl.
+
+*********************************************************
+
+Read the problems in batch1.jsonl and batch2.jsonl. Of those that have the correct answer, collate them, and write them all into a new batch1.jsonl file in finalized_problems/.
+
